@@ -1,4 +1,4 @@
-import { T, FD, FB, FM } from '../theme.js';
+import { T, FH as FD, FB, FH as FM } from '../theme.js';
 import { getName } from '../data/familyData.js';
 import Avatar from './Avatar.jsx';
 

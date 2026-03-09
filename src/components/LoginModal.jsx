@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { T, FD, FB, FM } from '../theme.js';
+import { T, FH as FD, FB, FH as FM } from '../theme.js';
 
 export default function LoginModal({ onLogin, onClose, error, setError }) {
   const [code, setCode] = useState('');
