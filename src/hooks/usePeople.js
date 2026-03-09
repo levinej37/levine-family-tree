@@ -11,18 +11,15 @@ export function usePeople() {
 
   useEffect(() => {
     const unsub = subscribeToPeople(async (data) => {
-      // Only run init logic once
       if (!didInit.current) {
         didInit.current = true;
         const stored = localStorage.getItem('seedVersion');
         if (stored !== SEED_VERSION) {
-          // Single atomic write — replaces everything instantly
           await atomicReseed(FAMILY_SEED);
           localStorage.setItem('seedVersion', SEED_VERSION);
-          return; // listener will fire again with fresh data
+          return;
         }
       }
-
       if (data.length > 0) {
         const map = new Map();
         data.forEach((p) => map.set(p.id, p));
