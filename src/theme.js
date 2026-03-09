@@ -1,67 +1,96 @@
+// ── HERITAGE ARCHIVE THEME ────────────────────────────────────
 export const T = {
-  bg0: '#0a0a0f',
-  bg1: '#0f0f17',
-  bg2: '#161622',
-  bg3: '#1e1e2e',
-  bg4: '#252538',
-  border: '#2a2a3d',
-  border2: '#353550',
-  gold: '#d4a853',
-  goldDim: '#a07830',
-  goldGlow: 'rgba(212,168,83,0.15)',
-  amber: '#f0c060',
-  text0: '#f0ede8',
-  text1: '#c8c4bc',
-  text2: '#857f76',
-  text3: '#504a44',
-  red: '#e05555',
-  redDim: 'rgba(224,85,85,0.12)',
-  green: '#4ade80',
-  greenDim: 'rgba(74,222,128,0.12)',
+  // Core palette
+  walnut:     '#4A3B2C',
+  walnutDark: '#2E2419',
+  walnutDeep: '#1A1208',
+  gold:       '#B79B6C',
+  goldLight:  '#D4BC8A',
+  goldDim:    '#7A6540',
+  parchment:  '#F3EFE6',
+  parchmentDark: '#E8E2D5',
+  parchmentDeep: '#D9D1C0',
+  ink:        '#1A1208',
+  inkLight:   '#2E2419',
+
+  // Text
+  text0: '#F3EFE6',
+  text1: '#E0D8C8',
+  text2: '#B8AC96',
+  text3: '#8A7D65',
+
+  // Backgrounds
+  bg0: '#0F0B06',
+  bg1: '#1A1208',
+  bg2: '#221A0E',
+  bg3: '#2E2419',
+  bg4: '#3A2E1E',
+
+  // Accents
+  border:  'rgba(183,155,108,0.15)',
+  border2: 'rgba(183,155,108,0.35)',
+  border3: 'rgba(183,155,108,0.6)',
+
+  sepia:   '#8B7355',
+  rust:    '#8B4513',
+  sage:    '#6B7C5A',
 };
 
-export const FD = "'Playfair Display', Georgia, serif";
-export const FB = "'DM Sans', 'Helvetica Neue', sans-serif";
-export const FM = "'DM Mono', monospace";
+// Fonts
+export const FH = '"Libre Baskerville", Georgia, serif';
+export const FC = '"Cormorant Garamond", Georgia, serif';
+export const FB = '"IBM Plex Mono", monospace';
+export const FU = 'system-ui, sans-serif';
 
 export const GLOBAL_STYLES = `
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body, #root { background: ${T.bg0}; min-height: 100vh; font-family: ${FB}; }
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: ${T.bg0};
+    color: ${T.text0};
+    font-family: ${FU};
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: ${T.bg1}; }
-  ::-webkit-scrollbar-thumb { background: ${T.bg4}; border-radius: 3px; }
-  input, textarea, select {
-    background: ${T.bg3} !important;
-    color: ${T.text0} !important;
-    font-family: ${FB};
+  ::-webkit-scrollbar-thumb { background: ${T.goldDim}; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: ${T.gold}; }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.06;
   }
-  input::placeholder, textarea::placeholder { color: ${T.text3} !important; }
-  input:focus, textarea:focus, select:focus {
-    outline: none !important;
-    border-color: ${T.gold} !important;
-    box-shadow: 0 0 0 2px ${T.goldGlow} !important;
-  }
-  option { background: ${T.bg3}; color: ${T.text0}; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  @keyframes shimmer {
-    0%, 100% { opacity: .4; }
-    50%       { opacity: .9; }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
-`;
+  @keyframes pulseGold {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 1; }
+  }
 
-export const AVATAR_PALETTES = [
-  ['#7c3aed', '#c4b5fd'],
-  ['#b45309', '#fcd34d'],
-  ['#065f46', '#6ee7b7'],
-  ['#1e40af', '#93c5fd'],
-  ['#9d174d', '#f9a8d4'],
-  ['#0e7490', '#67e8f9'],
-  ['#713f12', '#fdba74'],
-  ['#374151', '#9ca3af'],
-];
+  .fade-up { animation: fadeUp 0.7s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
+  .fade-up-2 { animation: fadeUp 0.7s 0.15s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+  .fade-up-3 { animation: fadeUp 0.7s 0.3s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+  .fade-up-4 { animation: fadeUp 0.7s 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+
+  button { cursor: pointer; }
+  input, textarea { font-family: inherit; }
+`;

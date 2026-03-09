@@ -1,22 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { subscribeToPeople, savePerson, deletePerson } from '../firebase.js';
 import { FAMILY_SEED, genId } from '../data/familyData.js';
 
 export function usePeople() {
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [seeded, setSeeded] = useState(false);
+  const seededRef = useRef(false);
 
   useEffect(() => {
     const unsub = subscribeToPeople((data) => {
-      if (data.length === 0 && !seeded) {
-        // First run — seed the database with family data
-        setSeeded(true);
+      if (data.length === 0 && !seededRef.current) {
+        seededRef.current = true;
         Promise.all(FAMILY_SEED.map((p) => savePerson(p))).then(() => {
-          console.log('Family data seeded to Firebase.');
+          console.log('Seeded.');
         });
-      } else {
-        setPeople(data);
+      } else if (data.length > 0) {
+        // Deduplicate by id — keep last occurrence
+        const map = new Map();
+        data.forEach((p) => map.set(p.id, p));
+        setPeople([...map.values()]);
         setLoading(false);
       }
     });
@@ -35,7 +37,6 @@ export function usePeople() {
 
   const removePerson = async (id) => {
     await deletePerson(id);
-    // Clean up references in other people
     const updates = people
       .filter((p) => p.fatherId === id || p.motherId === id || p.spouseId === id)
       .map((p) => savePerson({
