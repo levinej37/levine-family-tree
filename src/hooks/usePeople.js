@@ -1,24 +1,34 @@
 import { useState, useEffect, useRef } from 'react';
-import { subscribeToPeople, savePerson, deletePerson } from '../firebase.js';
+import { subscribeToPeople, savePerson, deletePerson, atomicReseed } from '../firebase.js';
 import { FAMILY_SEED, genId } from '../data/familyData.js';
+
+const SEED_VERSION = '3';
 
 export function usePeople() {
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(true);
-  const seededRef = useRef(false);
+  const didInit = useRef(false);
 
   useEffect(() => {
-    const unsub = subscribeToPeople((data) => {
-      if (data.length === 0 && !seededRef.current) {
-        seededRef.current = true;
-        Promise.all(FAMILY_SEED.map((p) => savePerson(p))).then(() => {
-          console.log('Seeded.');
-        });
-      } else if (data.length > 0) {
-        // Deduplicate by id — keep last occurrence
+    const unsub = subscribeToPeople(async (data) => {
+      // Only run init logic once
+      if (!didInit.current) {
+        didInit.current = true;
+        const stored = localStorage.getItem('seedVersion');
+        if (stored !== SEED_VERSION) {
+          // Single atomic write — replaces everything instantly
+          await atomicReseed(FAMILY_SEED);
+          localStorage.setItem('seedVersion', SEED_VERSION);
+          return; // listener will fire again with fresh data
+        }
+      }
+
+      if (data.length > 0) {
         const map = new Map();
         data.forEach((p) => map.set(p.id, p));
         setPeople([...map.values()]);
+        setLoading(false);
+      } else if (loading) {
         setLoading(false);
       }
     });

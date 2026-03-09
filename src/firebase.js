@@ -48,3 +48,11 @@ export async function seedDatabase(people) {
     await savePerson(person);
   }
 }
+
+// Atomically replace ALL people in one write
+export async function atomicReseed(people) {
+  const r = ref(db, 'people');
+  const obj = {};
+  people.forEach((p) => { obj[p.id] = p; });
+  await set(r, obj);
+}
